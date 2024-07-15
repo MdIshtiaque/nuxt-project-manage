@@ -1,17 +1,22 @@
 import axios from 'axios';
 
 export default function useAxios() {
-    const rtConfig = useRuntimeConfig();
+    const rtConfig = useRuntimeConfig()
 
-    return axios({
+    let api = axios.create({
         baseURL: rtConfig.public.API_URL,
-        timeout: 10000,
         headers: {
-            'Content-Type': 'application/json',
-            'accept': 'application/json',
-            'Authorization': "Bearer" + localStorage.getItem('token'),
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            // "Authorization": "Bearer " + localStorage.getItem("token"),
         },
         withCredentials: true,
         withXSRFToken: true,
     })
+
+    async function csrf() {
+        return await api.get("/sanctum/csrf-cookie")
+    }
+
+    return {api, csrf}
 }
